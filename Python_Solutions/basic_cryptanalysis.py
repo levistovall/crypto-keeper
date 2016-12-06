@@ -1,3 +1,11 @@
+# BASIC CRYPTANALYSIS
+#
+# The prompt for the problem was to use a text file as the source of valid words,
+# read in a string of words assumed to be enciphered using a monoalphabetic cipher,
+# and output a the same string, deciphered.
+
+# A monoalphabetic cipher is one that maps each letter in the alphabet to itself or another letter in the alphabet
+
 # this function creates a set of the words that occur in
 # the file, changed to lower case
 def get_word_set_from_file(file):
@@ -5,11 +13,8 @@ def get_word_set_from_file(file):
     return set(word.strip().lower() for word in in_file)
 
 # this function takes a string as input and returns two values:
-#   the first is a dictionary whose keys are integers representing word
-#   length and whose values are lists of every word in the string that
-#   has the length corresponding to the key.
-#
-#   the second value is the set of all words which occur in the string
+#   the first is the set of all words which occur in the string
+#   the second is the set of all letters which occur in the string
 def get_words_and_letters_in_string(st):
     st = st.split(" ")
 
@@ -54,13 +59,13 @@ def get_pattern_matches_from_set(st, s):
 # possible by using only those encoded strings which have only one pattern match
 # in the set of possible words(certainties)
 # it takes as input
-#   a dictionary of the form which is returned by length_dict_and_words_in_string(),
+#   a set of the enciphered words from which to glean a substitution alphabet
 #   a set of all strings(from dictionary.lst) which will be considered valid deciphered words,
 #   and the set of letters which occur in the enciphered words
 # it returns
-#   as complete an alphabet as possible without trying every combination of keys and values
-#   the list of letter keys remaining to be assigned values
-#   the list of letter values left which could possibly be assigned to a key
+#   a dictionary representing as complete an alphabet as possible without trying every combination of keys and values
+#   the list of letter keys remaining to be assigned values in the dict
+#   the list of letter values left which could possibly be assigned to a key in the dict
 def exhaust_certainties(enciphered, s, ls):
     certainties = {word:get_pattern_matches_from_set(word, s)[0] for word in enciphered if len(get_pattern_matches_from_set(word, s)) == 1}
     alphabet = {}
@@ -80,26 +85,7 @@ def exhaust_certainties(enciphered, s, ls):
                 vals_remaining.remove(certainties[key][j])
     return alphabet, keys_remaining, vals_remaining
 
-'''def exhaust_certainties(enciphered, s, ls):
-    certainties = {word:get_pattern_matches_from_set(word, s)[0] for word in enciphered if len(get_pattern_matches_from_set(word, s)) == 0}
-    alphabet = {}
-
-    keys_remaining = [letter for letter in ls]
-    vals_remaining = [chr(i) for i in range(ord("a"), ord("z")+1)]
-
-    for key in certainties:
-        for j in range(len(key)):
-            if key[j] in alphabet:
-                if alphabet[key[j]] != certainties[key][j]:
-                    print("THINGS ARE LESS CERTAIN THAN THEY SEEMED")
-                    return
-            else:
-                alphabet[key[j]] = certainties[key][j]
-                keys_remaining.remove(key[j])
-                vals_remaining.remove(certainties[key][j])
-    return alphabet, keys_remaining, vals_remaining'''
-
-# this function takes a string and dictionary representing a substitution alphabet,
+# this function takes a string and a dictionary representing a substitution alphabet,
 # and uses the dictionary to decipher the string a character at a time
 # returns the deciphered string with asterisks in place of anything that went
 # unaccounted for
